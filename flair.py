@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from time import sleep, time
 from log_conf import LoggerManager
 import argparse
+
 # determine curr or prev month
 parser = argparse.ArgumentParser(description="Process flairs")
 parser.add_argument("-m", action="store", dest="month", default="curr", help="curr or prev month? (default: curr)")
@@ -153,7 +154,7 @@ def main():
         try:
             con = sqlite3.connect(flair_db)
             con.row_factory = sqlite3.Row
-        except sqlite3.Error, e:
+        except sqlite3.Error as e:
             logger.exception("Error %s:" % e.args[0])
 
         curs = con.cursor()
