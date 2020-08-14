@@ -32,6 +32,18 @@ flairs = ast.literal_eval(cfg_file.get('post_check', 'flairs'))
 # configure logging
 logger = LoggerManager().getLogger(__name__)
 
+# check to see if last posts conflict with current post (rule 2)
+def not_been_posted(id, lastpost, post, row):
+    if row is not None:
+        if not row[id]:
+            lastid = ""
+        else:
+            lastid = row[id]
+        if row[lastpost]:
+            if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by):
+                return False
+    return True
+
 def main():
     while True:
         try:
@@ -103,25 +115,46 @@ def main():
                                     post.mod.remove()
                                     removedpost = True
 
-                            curs.execute('''SELECT username, lastid, lastpost as "lastpost [timestamp]" FROM flair WHERE username=?''', (post.author.name,))
+                            curs.execute('''SELECT username, lastbuyid, lastsellid, lasttradeid, lastbuypost as "lastbuypost [timestamp]", lastsellpost as "lastsellpost [timestamp]", lasttradepost as "lasttradepost [timestamp]" FROM flair WHERE username=?''', (post.author.name,))
 
                             row = curs.fetchone()
 
-                            # ensure that time of last post is > 24hrs
-                            if row is not None:
-                                if not row['lastid']:
-                                    lastid = ""
-                                else:
-                                    lastid = row['lastid']
-                                if row['lastpost']:
-                                    if (((((datetime.utcnow() - row['lastpost']).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by):
-                                        if ("last post title are same keyword") #where we left off
-                                            log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
-                                            log_msg_level = 'warn'
-                                            post.report('7 day rule')
-                                            post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please message the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
-                                            post.mod.remove()
-                                            removedpost = True
+                            # ensure that time of last post is > 7 days
+                            if 'buy' in post.title.lower():
+                                if not_been_posted('lastbuyid', 'lastbuypost', post, row):
+                                    if not_been_posted('lastsellid', 'lastsellpost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                        pass
+                                    else:
+                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg_level = 'warn'
+                                        post.report('Rule 2 - Posting Frequency')
+                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.mod.remove()
+                                        removedpost = True
+
+                            elif 'sell' in post.title.lower():
+                                if not_been_posted('lastsellid', 'lastsellpost', post, row):
+                                    if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                        pass
+                                    else:
+                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg_level = 'warn'
+                                        post.report('Rule 2 - Posting Frequency')
+                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.mod.remove()
+                                        removedpost = True
+
+                            elif 'trading' in post.title.lower() or 'trade' in post.title.lower():
+                                if not_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                    if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lastsellid', 'lastsellpost', post, row):
+                                        pass
+                                    else:
+                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg_level = 'warn'
+                                        post.report('Rule 2 - Posting Frequency')
+                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.mod.remove()
+                                        removedpost = True
 
                             # check comments for info from bot
                             if not post.distinguished:
@@ -141,7 +174,7 @@ def main():
                                         heatware = "None"
                                     else:
                                         heatware = "[" + str(post.author_flair_text) + "](" + str(post.author_flair_text) + ")"
-                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(post.author_flair_css_class) + '\n* Heatware: ' + heatware + '\n\n^^This ^^information ^^does ^^not ^^guarantee ^^a ^^successful ^^swap. ^^It ^^is ^^being ^^provided ^^to ^^help ^^potential ^^trade ^^partners ^^have ^^more ^^immediate ^^background ^^information ^^about ^^with ^^whom ^^they ^^are ^^swapping. ^^Please ^^be ^^sure ^^to ^^familiarize ^^yourself ^^with ^^the ^^[RULES](https://www.reddit.com/r/' + subreddit + rules + ') ^^and ^^other ^^guides ^^on ^^the ^^[WIKI](https://www.reddit.com/r/' + subreddit + '/wiki/index)').mod.distinguish()
+                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(post.author_flair_css_class)).mod.distinguish()
 
                             if (log_msg_level == 'warn'):
                                 logger.warning(log_msg)
@@ -154,8 +187,17 @@ def main():
                                     continue
                             if (removedpost):
                                 continue
-                            curs.execute('''UPDATE OR IGNORE flair SET lastpost=?, lastid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
-                            curs.execute('''INSERT OR IGNORE INTO flair (username, lastpost, lastid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
+
+                            # updates last post in database
+                            if 'buy' in post.title.lower():
+                                curs.execute('''UPDATE OR IGNORE flair SET lastbuypost=?, lastbuyid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
+                                curs.execute('''INSERT OR IGNORE INTO flair (username, lastbuypost, lastbuyid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
+                            elif 'sell' in post.title.lower():
+                                curs.execute('''UPDATE OR IGNORE flair SET lastsellpost=?, lastsellid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
+                                curs.execute('''INSERT OR IGNORE INTO flair (username, lastsellpost, lastsellid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
+                            elif 'trading' in post.title.lower() or 'trade' in post.title.lower():
+                                curs.execute('''UPDATE OR IGNORE flair SET lasttradepost=?, lasttradeid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
+                                curs.execute('''INSERT OR IGNORE INTO flair (username, lasttradepost, lasttradeid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
                             con.commit()
 
                 logger.debug('Sleeping for 2 minutes')

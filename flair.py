@@ -52,6 +52,12 @@ def main():
             return False
         if 'confirm' not in comment.body.lower():
             return False
+        if 'unconfirm' in comment.body.lower():
+            return False
+        if 'cant confirm' in comment.body.lower():
+            return False
+        if 'can\'t confirm' in comment.body.lower():
+            return False
         if comment.author.name == username:
             return False
         if comment.is_root is True:

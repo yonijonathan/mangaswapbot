@@ -29,9 +29,12 @@ def main():
 username TEXT PRIMARY KEY NOT NULL ,
 flair_text TEXT,
 flair_css_class TEXT,
-lastpost timestamp,
-lastpostid TEXT,
-lastid TEXT DEFAULT ''
+lastbuypost timestamp,
+lastsellpost timestamp,
+lasttradepost timestamp,
+lastbuyid TEXT DEFAULT,
+lastsellid TEXT DEFAULT,
+lasttradeid TEXT DEFAULT ''
 )''')
 
     flair_json = json.load(open(args.filename))
