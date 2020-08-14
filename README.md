@@ -13,9 +13,6 @@ Scripts that are used on /r/mechmarket and /r/hardwareswap created by the mods o
   * Checks flairs against a database and will warn if the flair deviates more than the value in the config.  Helps to catch users that accidently hide flair and end up getting reset
   * Easier manual flair processing.  Simply send the bot a message with the URL of the root comment in the body (click permalink first).  The bot will flair the users, delete the warning message, approve the reported comment, reply with 'added', and send a confirming PM to the mod.
   * **The flair import must be run before this can be run!**
-* **heatware.py**
-  * Watches the current heatware thread (specified in config.cfg) and updates user flair.
-  * Normally fired via cronjob.
 * **post_check.py**
   * Monitors all new posts to ensure it matches specified regexs.
   * Attempts to set post flair based on title.

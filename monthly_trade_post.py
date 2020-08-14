@@ -35,22 +35,34 @@ def login():
     return(r)
 
 def post_thread(r,month):
-    post = r.subreddit(subreddit).submit('%s Confirmed Trade Thread' % month, selftext='''Post your confirmed trades below, When confirming a post put Confirmed only nothing else it makes the bot unhappy :(
+    post = r.subreddit(subreddit).submit('%s Successful Trade Thread' % month, selftext='''#Welcome to the monthly trade thread!
 
-If more proof is requested by the bot please send a [modmail](http://www.reddit.com/message/compose?to=%%2Fr%%2F%s) including the following:
+---
+To confirm your transaction for the month of August, post the following information in a comment below.
 
-* Screenshot of PM\'s between the users
-* Permalink to trade confirmed thread comment''' % subreddit, send_replies=False)
+* What items were exchanged
+* Who you bought/sold/traded with
+* A link to the thread where the transaction occurred
+
+Once you have posted this information, the person you bought/sold/traded with will need to reply to your comment with "confirmed" for it to be recognized as a valid transaction.
+
+Click [here](https://www.reddit.com/r/mangaswap/comments/%s) for last month's trade thread.
+
+For any inquiries, feel free to send us a message via [**Mod Mail**](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap); DMs will be ignored.
+
+Happy swapping!''' % curr_id, send_replies=False)
     post.mod.distinguish()
     post.mod.sticky(bottom=False)
-    #r.send_message('/r/'+subreddit, 'New Trade Thread', 'A new trade thread has been posted for the month and the sidebar has been updated.')
     return (post.id)
 
+
+""" updates trade thread link on sidebar
 def change_sidebar(r, post_id, month):
     sb = r.subreddit(subreddit).mod.settings()["description"]
     new_flair = r'[Confirm your Trades](/' + post_id + ')'
     new_sb = re.sub(r'\[Confirm your Trades\]\(\/[a-z0-9]+\)', new_flair, sb, 1)
     r.subreddit(subreddit).mod.update(description=new_sb)
+"""
 
 def update_config(post_id):
     cfg_file.set('trade', 'prevlink_id', curr_id)
@@ -62,7 +74,7 @@ def main():
     month = get_month()
     r = login()
     post_id = post_thread(r, month)
-    change_sidebar(r, post_id, month)
+    #change_sidebar(r, post_id, month)
     update_config(post_id)
     logger.info("Posted Trade Confirmation thread")
 

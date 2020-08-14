@@ -204,13 +204,14 @@ def main():
             values(comment)
             values(parent)
 
-            # Flairs up in here
+            # Flairs up in here yo
             flair(comment)
             flair(parent)
             if reply:
                 comment.reply(reply)
             save()
 
+        """ useless shit
         for msg in r.inbox.unread(limit=None):
             if not msg.was_comment:
                 if msg.author in mods:
@@ -259,6 +260,7 @@ def main():
                     logger.info('Processing PM from user: ' + msg.author.name)
                     msg.reply('[BEEP BOOP! I AM A BOT!](http://i.imgur.com/9dJ2quO.gif)')
                     msg.mark_read()
+                """
 
         con.close()
 

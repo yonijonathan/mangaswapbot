@@ -24,7 +24,6 @@ subreddit = cfg_file.get('reddit', 'subreddit')
 flair_db = cfg_file.get('trade', 'flair_db')
 posttitle_regex = cfg_file.get('post_check', 'posttitle_regex')
 timestamp_regex = cfg_file.get('post_check', 'timestamp_regex')
-blacklist_regex = cfg_file.get('post_check', 'blacklist_regex')
 rules = cfg_file.get('post_check', 'rules')
 upper_hour = cfg_file.getint('post_check', 'upper_hour')
 lower_min = cfg_file.getint('post_check', 'lower_min')
@@ -63,7 +62,7 @@ def main():
                         noreply = False
 
                         already_done.append(post.id)
-                        if (not re.search(posttitle_regex, post.title) or re.search(blacklist_regex, post.title, re.IGNORECASE)) and not post.distinguished:
+                        if (not re.search(posttitle_regex, post.title)) and not post.distinguished:
                             if post.author.name != username:
                                 logger.warn('BAD POST (format) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name)
                                 if not post.approved_by:
@@ -99,8 +98,8 @@ def main():
                                 if not re.search(timestamp_regex, post.selftext, re.IGNORECASE):
                                     log_msg = 'BAD POST (timestamp) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
-                                    post.report('Missing timestamp')
-                                    post.reply('REMOVED: Missing timestamps. Please read [wiki](/r/' + subreddit + rules + ') for posting rules. **Do not delete or repost**, just add the timestamp to the post and send a modmail indicating it\'s been added.\n\nIf this is a buying post, you may repost but do not include money related terms on the [W] side of the title.').mod.distinguish()
+                                    post.report('Missing photos')
+                                    post.reply('REMOVED: Missing photos. Please read [wiki](/r/' + subreddit + rules + ') for posting rules. **Do not delete or repost**, just add the timestamp to the post and send a modmail indicating it\'s been added.').mod.distinguish()
                                     post.mod.remove()
                                     removedpost = True
 
@@ -115,13 +114,14 @@ def main():
                                 else:
                                     lastid = row['lastid']
                                 if row['lastpost']:
-                                    if (((((datetime.utcnow() - row['lastpost']).total_seconds() / 3600) < upper_hour) and (((datetime.utcnow() - row['lastpost']).total_seconds() / 60) > lower_min)) and (lastid != "") and (post.id != lastid) and not post.approved_by):
-                                        log_msg = 'BAD POST (24hr) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
-                                        log_msg_level = 'warn'
-                                        post.report('24 hour rule')
-                                        post.reply('REMOVED: Posting too frequently.  Please read [wiki](/r/' + subreddit + rules + ') for posting time limits.  If you believe this is a mistake, please message the [moderators](http://www.reddit.com/message/compose?to=%2Fr%2F' + subreddit + ').').mod.distinguish()
-                                        post.mod.remove()
-                                        removedpost = True
+                                    if (((((datetime.utcnow() - row['lastpost']).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by):
+                                        if ("last post title are same keyword") #where we left off
+                                            log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                            log_msg_level = 'warn'
+                                            post.report('7 day rule')
+                                            post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please message the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                            post.mod.remove()
+                                            removedpost = True
 
                             # check comments for info from bot
                             if not post.distinguished:
