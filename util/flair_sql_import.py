@@ -32,8 +32,8 @@ flair_css_class TEXT,
 lastbuypost timestamp,
 lastsellpost timestamp,
 lasttradepost timestamp,
-lastbuyid TEXT DEFAULT,
-lastsellid TEXT DEFAULT,
+lastbuyid TEXT DEFAULT '',
+lastsellid TEXT DEFAULT '',
 lasttradeid TEXT DEFAULT ''
 )''')
 
