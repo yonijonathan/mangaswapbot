@@ -40,7 +40,7 @@ def not_been_posted(id, lastpost, post, row):
         else:
             lastid = row[id]
         if row[lastpost]:
-            if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by):
+            if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
                 return False
     return True
 
