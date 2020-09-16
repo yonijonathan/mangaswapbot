@@ -174,7 +174,8 @@ def main():
                                         heatware = "None"
                                     else:
                                         heatware = "[" + str(post.author_flair_text) + "](" + str(post.author_flair_text) + ")"
-                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(post.author_flair_css_class)).mod.distinguish()
+                                    tradecount = post.author_flair_text.split()[0] if post.author_flair_text else 'None'
+                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(tradecount)).mod.distinguish()
 
                             if (log_msg_level == 'warn'):
                                 logger.warning(log_msg)

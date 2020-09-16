@@ -143,7 +143,7 @@ def main():
             if not item.author_flair_text:
                 item.author_flair_text = 0 + flair_txt_suffix
             if not row['flair_text']:
-                db_flair_text = 0 + flair_text_suffix
+                db_flair_text = 0 + flair_txt_suffix
             if item.author_flair_text in notrade_flairclass:
                 return True
             if (get_value_from_flair(item.author_flair_text) > (get_value_from_flair(row['flair_text']) + int(flair_dev))) or (get_value_from_flair(item.author_flair_text) < (get_value_from_flair(row['flair_text']) - int(flair_dev))):
