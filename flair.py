@@ -52,7 +52,8 @@ def get_value_from_flair(flair_text):
     try:
         return int(flair_text[:flair_text.find(' ')])
     except Exception as e:
-        logger.error(e)
+        logger.error('failed to parse number from flair text')
+        raise
 
 
 # +1 to flair_text
