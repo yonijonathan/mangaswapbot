@@ -46,11 +46,11 @@ To confirm your transaction for the month of August, post the following informat
 
 Once you have posted this information, the person you bought/sold/traded with will need to reply to your comment with "confirmed" for it to be recognized as a valid transaction.
 
-Click [here](https://www.reddit.com/r/mangaswap/comments/%s) for last month's trade thread.
+Click [here](https://www.reddit.com/r/mangaswap/comments/{}) for last month's trade thread.
 
 For any inquiries, feel free to send us a message via [**Mod Mail**](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap); DMs will be ignored.
 
-Happy swapping!''' % curr_id, send_replies=False)
+Happy swapping!'''.format(curr_id), send_replies=False)
     post.mod.distinguish()
     post.mod.sticky(bottom=False)
     return (post.id)
