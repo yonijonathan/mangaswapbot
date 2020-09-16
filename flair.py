@@ -58,7 +58,7 @@ def get_value_from_flair(flair_text):
 # +1 to flair_text
 def increment_flair_text(flair_text):
     num = get_value_from_flair(flair_text) + 1
-    return num + flair_txt_suffix
+    return str(num) + flair_txt_suffix
 
 def get_css_class(flair_text):
     if type(flair_text) != int:
@@ -141,9 +141,9 @@ def main():
 
         if row is not None:
             if not item.author_flair_text:
-                item.author_flair_text = 0 + flair_txt_suffix
+                item.author_flair_text = '0' + flair_txt_suffix
             if not row['flair_text']:
-                db_flair_text = 0 + flair_txt_suffix
+                db_flair_text = '0' + flair_txt_suffix
             if item.author_flair_text in notrade_flairclass:
                 return True
             if (get_value_from_flair(item.author_flair_text) > (get_value_from_flair(row['flair_text']) + int(flair_dev))) or (get_value_from_flair(item.author_flair_text) < (get_value_from_flair(row['flair_text']) - int(flair_dev))):
