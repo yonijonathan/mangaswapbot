@@ -26,6 +26,7 @@ reply = added
 sleep = 20
 karma_check = 15
 age_check = 14
+flair_txt_suffix = " Confirmed Trades"
 flair = flair.json
 flair_db = flair.db
 flair_dev = 2

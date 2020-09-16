@@ -38,12 +38,67 @@ dev_warning = cfg_file.get('trade', 'dev')
 reply = cfg_file.get('trade', 'reply')
 age_check = cfg_file.getint('trade', 'age_check')
 karma_check = cfg_file.getint('trade', 'karma_check')
+flair_txt_suffix = cfg_file.get('trade', 'flair_txt_suffix')
 flair_db = cfg_file.get('trade', 'flair_db')
 flair_dev = cfg_file.getint('trade', 'flair_dev')
 notrade_flairclass = ast.literal_eval(cfg_file.get('trade', 'notrade_flairclass'))
 
 # Configure logging
 logger = LoggerManager().getLogger(__name__)
+
+# pulls incremented value from flair_text
+def get_value_from_flair(flair_text):
+    # flair_text looks like "5 Confirmed Trades"
+    try:
+        return int(flair_text[:flair_text.find(' ')])
+    except Exception as e:
+        logger.error(e)
+
+
+# +1 to flair_text
+def increment_flair_text(flair_text):
+    num = get_value_from_flair(flair_text) + 1
+    return num + flair_txt_suffix
+
+def get_css_class(flair_text):
+    if type(flair_text) != int:
+        i = get_value_from_flair()
+    
+    if 1 <= i < 5:
+        return 'bookbrown'
+    elif 5 <= i < 10:
+        return 'bookred'
+    elif 10 <= i < 15:
+        return 'bookorange'
+    elif 15 <= i < 20:
+        return 'bookyellow'
+    elif 20 <= i < 25:
+        return 'booklightgreen'
+    elif 25 <= i < 30:
+        return 'bookgreen'
+    elif 30 <= i < 35:
+        return 'bookcyan'
+    elif 35 <= i < 40:
+        return 'bookblue'
+    elif 40 <= i < 45:
+        return 'bookpurple'
+    elif 45 <= i < 50:
+        return 'bookpink'
+    elif 50 <= i < 60:
+        return 'bookbronze'
+    elif 60 <= i < 70:
+        return 'booksilver'
+    elif 70 <= i < 80:
+        return 'bookgold'
+    elif 80 <= i < 90:
+        return 'bookplat'
+    elif 90 <= i < 100:
+        return 'bookblack'
+    elif 100 <= i:
+        return 'bookgif'
+    else:
+        logger.error('negative flair value')
+
 
 def main():
 
@@ -85,25 +140,25 @@ def main():
         row = curs.fetchone()
 
         if row is not None:
-            if not item.author_flair_css_class:
-                item.author_flair_css_class = 0
-            if not row['flair_css_class']:
-                db_flair_css_class = 0
-            if item.author_flair_css_class in notrade_flairclass:
+            if not item.author_flair_text:
+                item.author_flair_text = 0 + flair_txt_suffix
+            if not row['flair_text']:
+                db_flair_text = 0 + flair_text_suffix
+            if item.author_flair_text in notrade_flairclass:
                 return True
-            if (int(item.author_flair_css_class or 0) > (int(row['flair_css_class'] or 0) + int(flair_dev))) or (int(item.author_flair_css_class or 0) < (int(row['flair_css_class'] or 0) - int(flair_dev))):
+            if (get_value_from_flair(item.author_flair_text) > (get_value_from_flair(row['flair_text']) + int(flair_dev))) or (get_value_from_flair(item.author_flair_text) < (get_value_from_flair(row['flair_text']) - int(flair_dev))):
                 logger.info('Rechecking deviation: ' + item.author.name)
                 second_chance = next(r.subreddit(subreddit).flair(item.author.name))
-                if second_chance['flair_css_class'] == item.author_flair_css_class:
+                if second_chance['flair_text'] == item.author_flair_text:
                     item.report('Flair: Deviation between DB and Reddit')
                     if dev_warning:
                         item.reply(dev_warning)
-                    r.subreddit(subreddit).message('Flair Devation Detected', 'User: /u/' + item.author.name + '\n\nDB: ' + str(row['flair_css_class']) + '\n\nReddit: ' + str(item.author_flair_css_class))
-                    logger.info('Flair Deviation - User: ' + item.author.name + ', DB: ' + str(row['flair_css_class']) + ', Reddit: ' + str(item.author_flair_css_class))
+                    r.subreddit(subreddit).message('Flair Devation Detected', 'User: /u/' + item.author.name + '\n\nDB: ' + str(row['flair_text']) + '\n\nReddit: ' + str(item.author_flair_text))
+                    logger.info('Flair Deviation - User: ' + item.author.name + ', DB: ' + str(row['flair_text']) + ', Reddit: ' + str(item.author_flair_text))
                     save()
                     return True
 
-        if item.author_flair_css_class < 1:
+        if get_value_from_flair(item.author_flair_text) < 1:
             if age < age_check:
                 item.report('Flair: Account Age')
                 if age_warning:
@@ -119,25 +174,28 @@ def main():
         return True
 
     def values(item):
-        if not item.author_flair_css_class:
+        if not item.author_flair_text:
             logger.info('Rechecking empty flair: ' + item.author.name)
             second_chance = next(r.subreddit(subreddit).flair(item.author.name))
-            if second_chance['flair_css_class'] == item.author_flair_css_class:
-                item.author_flair_css_class = '1'
+            if second_chance['flair_text'] == item.author_flair_text:
+                item.author_flair_text = '1' + flair_txt_suffix
+                item.author_flair_css_class = get_css_class(1)
             else:
-                item.author_flair_css_class = str(int(item.author_flair_css_class or 0) + 1)
-        elif (item.author_flair_css_class and (item.author_flair_css_class in notrade_flairclass)):
+                item.author_flair_text = increment_flair_text(item.author_flair_text)
+                item.author_flair_css_class = get_css_class(item.author_flair_text)
+        elif (item.author_flair_text and (item.author_flair_text in notrade_flairclass)):
             pass
         else:
-            item.author_flair_css_class = str(int(item.author_flair_css_class) + 1)
-        if not item.author_flair_text:
-            item.author_flair_text = ''
+            item.author_flair_text = increment_flair_text(item.author_flair_text)
+            item.author_flair_css_class = get_css_class(item.author_flair_text)
+        if not item.author_flair_css_class:
+            item.author_flair_css_class = ''
 
     def flair(item):
-        if item.author_flair_css_class not in notrade_flairclass:
+        if item.author_flair_text not in notrade_flairclass:
             # Set flair in subreddit
             r.subreddit(subreddit).flair.set(item.author, item.author_flair_text, item.author_flair_css_class)
-            logger.info('Set ' + item.author.name + '\'s flair to ' + item.author_flair_css_class)
+            logger.info('Set ' + item.author.name + '\'s flair to ' + item.author_flair_text)
             # Set flair in database
             curs.execute('''UPDATE OR IGNORE flair SET flair_text=?, flair_css_class=? WHERE username=?''', (item.author_flair_text, item.author_flair_css_class, item.author.name, ))
             curs.execute('''INSERT OR IGNORE INTO flair (username, flair_text, flair_css_class) VALUES (?, ?, ?)''', (item.author.name, item.author_flair_text, item.author_flair_css_class, ))
@@ -146,7 +204,7 @@ def main():
         for com in flat_comments:
             if hasattr(com.author, 'name'):
                 if com.author.name == item.author.name:
-                    com.author_flair_css_class = item.author_flair_css_class
+                    com.author_flair_text = item.author_flair_text
 
     def save():
         with open(link_id + ".log", 'a') as myfile:
