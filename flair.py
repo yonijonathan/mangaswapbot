@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from time import sleep, time
 from log_conf import LoggerManager
 import argparse
+import traceback
 
 # determine curr or prev month
 parser = argparse.ArgumentParser(description="Process flairs")
@@ -50,10 +51,10 @@ logger = LoggerManager().getLogger(__name__)
 def get_value_from_flair(flair_text):
     # flair_text looks like "5 Confirmed Trades"
     try:
-        return int(flair_text[:flair_text.find(' ')])
+        return int(flair_text[:flair_text.find(' ')].strip('"'))
     except Exception as e:
         logger.error('failed to parse number from flair text')
-        raise
+        raise e
 
 
 # +1 to flair_text
@@ -193,6 +194,7 @@ def main():
             item.author_flair_css_class = ''
 
     def flair(item):
+        item.author_flair_text = item.author_flair_text.replace('"', '')
         if item.author_flair_text not in notrade_flairclass:
             # Set flair in subreddit
             r.subreddit(subreddit).flair.set(item.author, item.author_flair_text, item.author_flair_css_class)
