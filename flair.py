@@ -63,7 +63,7 @@ def increment_flair_text(flair_text):
 
 def get_css_class(flair_text):
     if type(flair_text) != int:
-        i = get_value_from_flair()
+        i = get_value_from_flair(flair_text)
     
     if 1 <= i < 5:
         return 'bookbrown'
