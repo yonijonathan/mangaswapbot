@@ -20,7 +20,6 @@ link_id = TRADE_POST_LINK_ID
 prevlink_id = PREVIOUS_MONTH_TRADE_POST_LINK_ID
 equal = You have confirmed a trade under your own post, this action has been reported to the Moderators.
 age = Your account has been created recently, this has been sent for further review.
-karma = You do not have enough karma, this has been sent for further review.
 dev = Flair deviation detected.  The mods have been notified to review.
 reply = added
 sleep = 20
@@ -59,7 +58,7 @@ flairs = [
     }
     ]
 rules = /wiki/rules/rules
-upper_hour = 168
+upper_hour = 152
 
 [price]
 link_id = PRICE_CHECK_POST_LINK_ID
