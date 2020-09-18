@@ -161,20 +161,6 @@ def main():
                     logger.info('Flair Deviation - User: ' + item.author.name + ', DB: ' + str(row['flair_text']) + ', Reddit: ' + str(item.author_flair_text))
                     save()
                     return True
-
-        if get_value_from_flair(item.author_flair_text) < 1:
-            if age < age_check:
-                item.report('Flair: Account Age')
-                if age_warning:
-                    item.reply(age_warning)
-                save()
-                return False
-            if karma < karma_check:
-                item.report('Flair: Account Karma')
-                if karma_warning:
-                    item.reply(karma_warning)
-                save()
-                return False
         return True
 
     def values(item):
