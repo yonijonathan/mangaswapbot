@@ -34,11 +34,9 @@ subreddit = cfg_file.get('reddit', 'subreddit')
 link_id = cfg_file.get('trade', conf_link_id)
 equal_warning = cfg_file.get('trade', 'equal')
 age_warning = cfg_file.get('trade', 'age')
-karma_warning = cfg_file.get('trade', 'karma')
 dev_warning = cfg_file.get('trade', 'dev')
 reply = cfg_file.get('trade', 'reply')
 age_check = cfg_file.getint('trade', 'age_check')
-karma_check = cfg_file.getint('trade', 'karma_check')
 flair_txt_suffix = cfg_file.get('trade', 'flair_txt_suffix')
 flair_db = cfg_file.get('trade', 'flair_db')
 flair_dev = cfg_file.getint('trade', 'flair_dev')
@@ -248,7 +246,7 @@ def main():
             if not comment.author.name.lower() in parent.body.lower():
                 continue
 
-            # Check Account Age, Karma, and Flair Deviation
+            # Check Account Age and Flair Deviation
             logger.debug('Verifying comment id: ' + comment.id + ' and parent id: ' + parent.id)
             if not verify(comment):
                 continue
@@ -266,7 +264,6 @@ def main():
                 comment.reply(reply)
             save()
 
-        """ useless shit
         for msg in r.inbox.unread(limit=None):
             if not msg.was_comment:
                 if msg.author in mods:
@@ -313,9 +310,8 @@ def main():
                             msg.mark_read()
                 else:
                     logger.info('Processing PM from user: ' + msg.author.name)
-                    msg.reply('[BEEP BOOP! I AM A BOT!](http://i.imgur.com/9dJ2quO.gif)')
+                    msg.reply('[No no no! Not in my house!](https://i.imgur.com/ngEeKnD.gif)')
                     msg.mark_read()
-                """
 
         con.close()
 
