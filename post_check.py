@@ -79,7 +79,7 @@ def main():
                                 logger.warn('BAD POST (format) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name)
                                 if not post.approved_by:
                                     post.report('Bad title')
-                                    post.reply('REMOVED: Your post was automatically removed due to an incorrect title. Please read the [wiki](/r/' + subreddit + rules + ') for posting rules').mod.distinguish()
+                                    post.reply('**Removed:** Incorrect title. Please refer to the "posting format" section of the sidebar.').mod.distinguish()
                                     post.mod.remove()
                                 else:
                                     logger.warn('Bad post approved by: ' + post.approved_by)
@@ -111,7 +111,7 @@ def main():
                                     log_msg = 'BAD POST (timestamp) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     post.report('Missing photos')
-                                    post.reply('REMOVED: Missing photos. Please read [wiki](/r/' + subreddit + rules + ') for posting rules. **Do not delete or repost**, just add the timestamp to the post and send a modmail indicating it\'s been added.').mod.distinguish()
+                                    post.reply('**Removed:** Missing photos. **Do not delete or repost**, just add your photos to the post and send a modmail indicating they\'ve been added.').mod.distinguish()
                                     post.mod.remove()
                                     removedpost = True
 
@@ -125,10 +125,10 @@ def main():
                                     if not_been_posted('lastsellid', 'lastsellpost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
                                         pass
                                     else:
-                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                         log_msg_level = 'warn'
                                         post.report('Rule 2 - Posting Frequency')
-                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
                                         post.mod.remove()
                                         removedpost = True
 
@@ -137,10 +137,10 @@ def main():
                                     if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
                                         pass
                                     else:
-                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                         log_msg_level = 'warn'
                                         post.report('Rule 2 - Posting Frequency')
-                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
                                         post.mod.remove()
                                         removedpost = True
 
@@ -149,10 +149,10 @@ def main():
                                     if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lastsellid', 'lastsellpost', post, row):
                                         pass
                                     else:
-                                        log_msg = 'BAD POST (7 day) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                        log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                         log_msg_level = 'warn'
                                         post.report('Rule 2 - Posting Frequency')
-                                        post.reply('Removed due to post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
                                         post.mod.remove()
                                         removedpost = True
 
