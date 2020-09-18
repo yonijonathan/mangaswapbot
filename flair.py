@@ -50,6 +50,8 @@ logger = LoggerManager().getLogger(__name__)
 # pulls incremented value from flair_text
 def get_value_from_flair(flair_text):
     # flair_text looks like "5 Confirmed Trades"
+    if not flair_text:
+        return 0
     try:
         return int(flair_text[:flair_text.find(' ')].strip('"'))
     except Exception as e:
