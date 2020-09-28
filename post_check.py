@@ -26,7 +26,6 @@ posttitle_regex = cfg_file.get('post_check', 'posttitle_regex')
 timestamp_regex = cfg_file.get('post_check', 'timestamp_regex')
 rules = cfg_file.get('post_check', 'rules')
 upper_hour = cfg_file.getint('post_check', 'upper_hour')
-lower_min = cfg_file.getint('post_check', 'lower_min')
 flairs = ast.literal_eval(cfg_file.get('post_check', 'flairs'))
 
 # configure logging
@@ -74,7 +73,7 @@ def main():
                         noreply = False
 
                         already_done.append(post.id)
-                        if (not re.search(posttitle_regex, post.title)) and not post.distinguished:
+                        if (not re.search(posttitle_regex, post.title, re.IGNORECASE)) and not post.distinguished:
                             if post.author.name != username:
                                 logger.warn('BAD POST (format) - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name)
                                 if not post.approved_by:
