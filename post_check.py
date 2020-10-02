@@ -32,7 +32,7 @@ flairs = ast.literal_eval(cfg_file.get('post_check', 'flairs'))
 logger = LoggerManager().getLogger(__name__)
 
 # check to see if last posts conflict with current post (rule 2)
-def not_been_posted(id, lastpost, post, row):
+def has_been_posted(id, lastpost, post, row):
     if row is not None:
         if not row[id]:
             lastid = ""
@@ -40,8 +40,14 @@ def not_been_posted(id, lastpost, post, row):
             lastid = row[id]
         if row[lastpost]:
             if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
-                return False
-    return True
+                return True
+    return False
+
+# message if post is repeated in 7 days
+def repeat_post(post):
+    post.report('Rule 2 - Posting Frequency')
+    post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
+    post.mod.remove()
 
 def main():
     while True:
@@ -120,40 +126,40 @@ def main():
 
                             # ensure that time of last post is > 7 days
                             if 'buy' in post.title.lower():
-                                if not_been_posted('lastbuyid', 'lastbuypost', post, row):
-                                    if not_been_posted('lastsellid', 'lastsellpost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
-                                        pass
-                                    else:
-                                        log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
-                                        log_msg_level = 'warn'
-                                        post.report('Rule 2 - Posting Frequency')
-                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
-                                        post.mod.remove()
-                                        removedpost = True
+                                if has_been_posted('lastbuyid', 'lastbuypost', post, row):
+                                    log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
+                                elif has_been_posted('lastsellid', 'lastsellpost', post, row) and has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                    log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
 
                             elif 'sell' in post.title.lower():
-                                if not_been_posted('lastsellid', 'lastsellpost', post, row):
-                                    if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lasttradeid', 'lasttradepost', post, row):
-                                        pass
-                                    else:
-                                        log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
-                                        log_msg_level = 'warn'
-                                        post.report('Rule 2 - Posting Frequency')
-                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
-                                        post.mod.remove()
-                                        removedpost = True
+                                if has_been_posted('lastsellid', 'lastsellpost', post, row):
+                                    log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row) and has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                    log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
 
                             elif 'trading' in post.title.lower() or 'trade' in post.title.lower():
-                                if not_been_posted('lasttradeid', 'lasttradepost', post, row):
-                                    if not_been_posted('lastbuyid', 'lastbuypost', post, row) or not_been_posted('lastsellid', 'lastsellpost', post, row):
-                                        pass
-                                    else:
-                                        log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
-                                        log_msg_level = 'warn'
-                                        post.report('Rule 2 - Posting Frequency')
-                                        post.reply('**Removed:** Post frequecy. Please refer to **rule 2** for posting time limits.\n\nIf you believe this is a mistake, please contact the [moderators](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap' + subreddit + ').').mod.distinguish()
-                                        post.mod.remove()
-                                        removedpost = True
+                                if has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                    log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row) and has_been_posted('lastsellid', 'lastsellpost', post, row):
+                                    log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
+                                    log_msg_level = 'warn'
+                                    repeat_post(post)
+                                    removedpost = True
 
                             # check comments for info from bot
                             if not post.distinguished:
