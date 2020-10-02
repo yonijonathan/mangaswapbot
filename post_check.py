@@ -34,11 +34,20 @@ logger = LoggerManager().getLogger(__name__)
 # check to see if last posts conflict with current post (rule 2)
 def has_been_posted(id, lastpost, post, row):
     if row is not None:
+        print('row is not None')
+        print(row[id])
         if not row[id]:
             lastid = ""
         else:
             lastid = row[id]
         if row[lastpost]:
+            print('row[lastpost]', row[lastpost])
+            print('datetime.utcnow()', datetime.utcnow())
+            print('upper_hour', upper_hour)
+            print('lastid', lastid)
+            print('post.id', post.id)
+            print('post.approved_by', post.approved_by)
+            print(((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by))
             if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
                 return True
     return False
@@ -123,7 +132,7 @@ def main():
                             curs.execute('''SELECT username, lastbuyid, lastsellid, lasttradeid, lastbuypost as "lastbuypost [timestamp]", lastsellpost as "lastsellpost [timestamp]", lasttradepost as "lasttradepost [timestamp]" FROM flair WHERE username=?''', (post.author.name,))
 
                             row = curs.fetchone()
-
+                            print('row', row)
                             # ensure that time of last post is > 7 days
                             if 'buy' in post.title.lower():
                                 if has_been_posted('lastbuyid', 'lastbuypost', post, row):
@@ -190,15 +199,18 @@ def main():
                             # add time to sql
                             if row is not None:
                                 if (post.id == lastid):
+                                    print('boutta continue post.id == lastid')
                                     continue
                             if (removedpost):
+                                print('continue because removedpost')
                                 continue
-
+                            print('post title', post.title.lower())
                             # updates last post in database
                             if 'buy' in post.title.lower():
                                 curs.execute('''UPDATE OR IGNORE flair SET lastbuypost=?, lastbuyid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
                                 curs.execute('''INSERT OR IGNORE INTO flair (username, lastbuypost, lastbuyid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
                             elif 'sell' in post.title.lower():
+                                print('adding sell post to db')
                                 curs.execute('''UPDATE OR IGNORE flair SET lastsellpost=?, lastsellid=? WHERE username=?''', (datetime.utcnow(), post.id, post.author.name, ))
                                 curs.execute('''INSERT OR IGNORE INTO flair (username, lastsellpost, lastsellid) VALUES (?, ?, ?)''', (post.author.name, datetime.utcnow(), post.id, ))
                             elif 'trading' in post.title.lower() or 'trade' in post.title.lower():
