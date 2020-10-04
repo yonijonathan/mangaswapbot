@@ -31,6 +31,9 @@ flairs = ast.literal_eval(cfg_file.get('post_check', 'flairs'))
 # configure logging
 logger = LoggerManager().getLogger(__name__)
 
+# global vars
+lastid = ""
+
 # check to see if last posts conflict with current post (rule 2)
 def has_been_posted(id, lastpost, post, row):
     if row is not None:
