@@ -7,7 +7,7 @@ import praw
 from ConfigParser import SafeConfigParser
 from flair import get_css_class
 
-containing_dir = os.path.dirname(os.path.abspath(os.path.dirname(sys.argv[0])))
+containing_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 cfg_file = SafeConfigParser()
 path_to_cfg = os.path.join(containing_dir, 'config.cfg')
 cfg_file.read(path_to_cfg)
