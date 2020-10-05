@@ -4,6 +4,7 @@ import sys, os
 import json
 import argparse
 import praw
+import sqlite3
 from ConfigParser import SafeConfigParser
 from flair import get_css_class
 
@@ -16,6 +17,7 @@ password = cfg_file.get('reddit', 'password')
 app_key = cfg_file.get('reddit', 'app_key')
 app_secret = cfg_file.get('reddit', 'app_secret')
 subreddit = cfg_file.get('reddit', 'subreddit')
+flair_db = cfg_file.get('trade', 'flair_db')
 
 curs = None
 
@@ -42,9 +44,9 @@ def get_fixed_css_classes(file):
     return out
 
 def main():
-    parser = argparse.ArgumentParser(description="Import flairs to subreddit")
-    parser.add_argument("-f", "--file", dest="filename", help="input file", metavar="FILE", type=extant_file, required=True)
-    args = parser.parse_args()
+    #parser = argparse.ArgumentParser(description="Import flairs to subreddit")
+    #parser.add_argument("-f", "--file", dest="filename", help="input file", metavar="FILE", type=extant_file, required=True)
+    #args = parser.parse_args()
 
     r = praw.Reddit(client_id=app_key,
                     client_secret=app_secret,
@@ -60,7 +62,7 @@ def main():
     
     curs = con.cursor()
 
-    r.subreddit(subreddit).flair.update(get_fixed_css_classes(args.filename))
+    r.subreddit(subreddit).flair.update(get_fixed_css_classes('mangaswaptestflairs.json'))
 
 if __name__ == "__main__":
     main()
