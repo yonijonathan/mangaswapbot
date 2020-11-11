@@ -30,9 +30,9 @@ def get_fixed_css_classes(curs, file):
     flair_json = json.load(open(file))
     flairs = dict()
     for entry in flair_json:
-        if entry['flair_text'] is None:
+        if 'flair_text' not in entry:
             continue
-        elif entry['flair_css_class'] is None:
+        elif 'flair_css_class' not in entry:
             continue
         # check if flair_text is the same as the database
         curs.execute('''SELECT flair_text FROM flair WHERE username=?''', (entry['user'],))
