@@ -26,7 +26,7 @@ def extant_file(x):
         raise argparse.ArgumentError("{0} does not exist".format(x))
     return x
 
-def get_fixed_css_classes(file):
+def get_fixed_css_classes(curs, file):
     flair_json = json.load(open(file))
     flairs = dict()
     for entry in flair_json:
@@ -35,7 +35,7 @@ def get_fixed_css_classes(file):
         elif entry['flair_css_class'] is None:
             continue
         # check if flair_text is the same as the database
-        curs.execute('''SELECT flair_text FROM flair WHERE username=?''', entry['user'])
+        curs.execute('''SELECT flair_text FROM flair WHERE username=?''', (entry['user'],))
         row = curs.fetchone()
         if row['flair_text'] == entry['flair_text']:
             num = get_value_from_flair(entry['flair_text'])
@@ -66,10 +66,10 @@ def main():
     
     curs = con.cursor()
 
-    flairs = get_fixed_css_classes('mangaswaptestflairs.json')
+    flairs = get_fixed_css_classes(curs, 'mangaswaptestflairs.json')
 
     for num, names in flairs.items():
-        r.subreddit(subreddit).flair.update(names, text=f'{num} Confirmed Trades', css_class=get_css_class(num))
+        r.subreddit(subreddit).flair.update(names, text=str(num) + ' Confirmed Trades', css_class=get_css_class(num))
 
 if __name__ == "__main__":
     main()
