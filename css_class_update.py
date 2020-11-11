@@ -6,7 +6,7 @@ import argparse
 import praw
 import sqlite3
 from ConfigParser import SafeConfigParser
-from flair import get_css_class
+from flair import get_css_class, get_value_from_flair
 
 containing_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
 cfg_file = SafeConfigParser()
@@ -28,20 +28,24 @@ def extant_file(x):
 
 def get_fixed_css_classes(file):
     flair_json = json.load(open(file))
-    out = list()
+    flairs = dict()
     for entry in flair_json:
         if entry['flair_text'] is None:
             continue
         elif entry['flair_css_class'] is None:
             continue
         # check if flair_text is the same as the database
-        curs.execute('''SELECT flair_text FROM flair WHERE username=?''', (entry['user']))
+        curs.execute('''SELECT flair_text FROM flair WHERE username=?''', entry['user'])
         row = curs.fetchone()
         if row['flair_text'] == entry['flair_text']:
-            entry['flair_css_class'] = get_css_class(entry['flair_text'])
-            out.append(entry)
+            num = get_value_from_flair(entry['flair_text'])
+            if num in flairs.keys():
+                flairs[num].append(entry['user'])
+            else:
+                flairs[num] = [entry['user']]
+    
+    return flairs
 
-    return out
 
 def main():
     #parser = argparse.ArgumentParser(description="Import flairs to subreddit")
@@ -62,7 +66,10 @@ def main():
     
     curs = con.cursor()
 
-    r.subreddit(subreddit).flair.update(get_fixed_css_classes('mangaswaptestflairs.json'))
+    flairs = get_fixed_css_classes('mangaswaptestflairs.json')
+
+    for num, names in flairs.items():
+        r.subreddit(subreddit).flair.update(names, text=f'{num} Confirmed Trades', css_class=get_css_class(num))
 
 if __name__ == "__main__":
     main()
