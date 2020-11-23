@@ -138,7 +138,7 @@ def main():
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastsellid', 'lastsellpost', post, row, 'buy') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'buy'):
+                                elif has_been_posted('lastsellid', 'lastsellpost', post, row, 'sell') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'trade'):
                                     log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
@@ -150,7 +150,7 @@ def main():
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'sell') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'sell'):
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'buy') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'trade'):
                                     log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
@@ -162,7 +162,7 @@ def main():
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'trading') and has_been_posted('lastsellid', 'lastsellpost', post, row, 'trading'):
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'buy') and has_been_posted('lastsellid', 'lastsellpost', post, row, 'sell'):
                                     log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
