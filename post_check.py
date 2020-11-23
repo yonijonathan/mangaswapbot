@@ -25,7 +25,8 @@ flair_db = cfg_file.get('trade', 'flair_db')
 posttitle_regex = cfg_file.get('post_check', 'posttitle_regex')
 timestamp_regex = cfg_file.get('post_check', 'timestamp_regex')
 rules = cfg_file.get('post_check', 'rules')
-upper_hour = cfg_file.getint('post_check', 'upper_hour')
+upper_hour_buy = cfg_file.getint('post_check', 'upper_hour_buy')
+upper_hour_sell = cfg_file.getint('post_check', 'upper_hour_sell')
 flairs = ast.literal_eval(cfg_file.get('post_check', 'flairs'))
 
 # configure logging
@@ -35,15 +36,19 @@ logger = LoggerManager().getLogger(__name__)
 lastid = ""
 
 # check to see if last posts conflict with current post (rule 2)
-def has_been_posted(id, lastpost, post, row):
+def has_been_posted(id, lastpost, post, row, post_type):
     if row is not None:
         if not row[id]:
             lastid = ""
         else:
             lastid = row[id]
         if row[lastpost]:
-            if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
-                return True
+            if post_type == 'buy':
+                if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour_buy) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
+                    return True
+            else:
+                if (((((datetime.utcnow() - row[lastpost]).total_seconds() / 3600) < upper_hour_sell) and (lastid != "") and (post.id != lastid) and not post.approved_by)):
+                    return True
     return False
 
 # message if post is repeated in 7 days
@@ -128,36 +133,36 @@ def main():
                             row = curs.fetchone()
                             # ensure that time of last post is > 7 days
                             if 'buy' in post.title.lower():
-                                if has_been_posted('lastbuyid', 'lastbuypost', post, row):
+                                if has_been_posted('lastbuyid', 'lastbuypost', post, row, 'buy'):
                                     log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastsellid', 'lastsellpost', post, row) and has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                elif has_been_posted('lastsellid', 'lastsellpost', post, row, 'buy') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'buy'):
                                     log_msg = 'BAD POST (7 day) BUYING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
 
                             elif 'sell' in post.title.lower():
-                                if has_been_posted('lastsellid', 'lastsellpost', post, row):
+                                if has_been_posted('lastsellid', 'lastsellpost', post, row, 'sell'):
                                     log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row) and has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'sell') and has_been_posted('lasttradeid', 'lasttradepost', post, row, 'sell'):
                                     log_msg = 'BAD POST (7 day) SELLING - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
 
                             elif 'trading' in post.title.lower() or 'trade' in post.title.lower():
-                                if has_been_posted('lasttradeid', 'lasttradepost', post, row):
+                                if has_been_posted('lasttradeid', 'lasttradepost', post, row, 'trading'):
                                     log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
                                     removedpost = True
-                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row) and has_been_posted('lastsellid', 'lastsellpost', post, row):
+                                elif has_been_posted('lastbuyid', 'lastbuypost', post, row, 'trading') and has_been_posted('lastsellid', 'lastsellpost', post, row, 'trading'):
                                     log_msg = 'BAD POST (7 day) TRADE - ' + post.id + ' - ' + clean_title + ' - by: ' + post.author.name
                                     log_msg_level = 'warn'
                                     repeat_post(post)
