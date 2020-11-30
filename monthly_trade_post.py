@@ -38,7 +38,7 @@ def post_thread(r,month):
     post = r.subreddit(subreddit).submit('%s Successful Trade Thread' % month, selftext='''#Welcome to the monthly trade thread!
 
 ---
-To confirm your transaction for the month of August, post the following information in a comment below.
+To confirm your transaction for the month of {}, post the following information in a comment below.
 
 * What items were exchanged
 * Who you bought/sold/traded with
@@ -50,7 +50,7 @@ Click [here](https://www.reddit.com/r/mangaswap/comments/{}) for last month's tr
 
 For any inquiries, feel free to send us a message via [**Mod Mail**](https://www.reddit.com/message/compose?to=%2Fr%2Fmangaswap); DMs will be ignored.
 
-Happy swapping!'''.format(curr_id), send_replies=False)
+Happy swapping!'''.format(month, curr_id), send_replies=False)
     post.mod.distinguish()
     post.mod.sticky(bottom=False)
     return (post.id)
