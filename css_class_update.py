@@ -71,5 +71,7 @@ def main():
     for num, names in flairs.items():
         r.subreddit(subreddit).flair.update(names, text=str(num) + ' Confirmed Trades', css_class=get_css_class(num))
 
+    # TODO update database with new values
+
 if __name__ == "__main__":
     main()
