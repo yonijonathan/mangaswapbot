@@ -66,7 +66,7 @@ def main():
     
     curs = con.cursor()
 
-    flairs = get_fixed_css_classes(curs, 'mangaswaptestflairs.json')
+    flairs = get_fixed_css_classes(curs, 'mangaswapflairs.json')
 
     for num, names in flairs.items():
         r.subreddit(subreddit).flair.update(names, text=str(num) + ' Confirmed Trades', css_class=get_css_class(num))
