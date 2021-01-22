@@ -58,7 +58,8 @@ flairs = [
     }
     ]
 rules = /wiki/rules/rules
-upper_hour = 152
+upper_hour_buy = 152
+upper_hour_sell = 80
 
 [price]
 link_id = PRICE_CHECK_POST_LINK_ID
