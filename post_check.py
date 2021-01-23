@@ -187,7 +187,7 @@ def main():
                                     else:
                                         heatware = "[" + str(post.author_flair_text) + "](" + str(post.author_flair_text) + ")"
                                     tradecount = post.author_flair_text.split()[0] if post.author_flair_text else 'None'
-                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(tradecount) + '\n Make sure to read ***all*** of the rules prior to buying or selling! PayPal G&S is the ***only*** acceptable form of payment.').mod.distinguish()
+                                    post.reply('* Username: /u/' + str(post.author.name) + '\n* Join date: ' + age + '\n* Link karma: ' + str(post.author.link_karma) + '\n* Comment karma: ' + str(post.author.comment_karma) + '\n* Confirmed trades: ' + str(tradecount) + '\n\n Make sure to read ***all*** of the rules prior to buying or selling! PayPal G&S is the ***only*** acceptable form of payment.').mod.distinguish()
                             if (log_msg_level == 'warn'):
                                 logger.warning(log_msg)
                             else:
